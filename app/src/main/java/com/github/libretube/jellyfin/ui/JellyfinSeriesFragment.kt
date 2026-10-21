@@ -2,6 +2,7 @@ package com.github.libretube.jellyfin.ui
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.isGone
@@ -136,6 +137,10 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
 
         // the poster of the series, in its own format instead of a round channel avatar
         binding.channelImage.showAsPoster(HEADER_POSTER_WIDTH_DP)
+        // the poster fills its view, thus it needs a margin to line up with the description below
+        binding.channelImage.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            marginStart = HEADER_POSTER_MARGIN_DP.dpToPx()
+        }
         ImageHelper.loadImage(item.posterUrl(), binding.channelImage)
 
         // "Continue: S2·E4" plays the next episode (or the next movie of a collection)
@@ -250,6 +255,7 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
     companion object {
         private const val MAX_HEADER_HEIGHT_DP = 220f
         private const val HEADER_POSTER_WIDTH_DP = 44f
+        private const val HEADER_POSTER_MARGIN_DP = 10f
     }
 
     private class SeasonsAdapter(
