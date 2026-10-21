@@ -21,6 +21,9 @@
     <string name="jellyfin_transcoding_audio_only">Alleen audio (aanbevolen): de server mag audio omzetten die deze telefoon niet afspeelt</string>
     <string name="jellyfin_transcoding_always">Altijd: de server mag ook de video omzetten (zware belasting)</string>
 
+    <!-- search -->
+    <string name="jellyfin_search_hint">Zoeken in Jellyfin</string>
+
     <!-- lists -->
     <string name="jellyfin_next_up">Volgende afleveringen</string>
     <string name="jellyfin_recently_added">Recent toegevoegd</string>
@@ -37,6 +40,7 @@
     <string name="jellyfin_download_all_confirm">%1$d items van \"%2$s\" downloaden? Elke download is het originele bestand.</string>
     <string name="jellyfin_download_all_started">%1$d downloads gestart</string>
     <string name="jellyfin_marked_watched">Gemarkeerd als gezien</string>
+    <string name="jellyfin_marked_unwatched">Gemarkeerd als ongezien</string>
 
     <!-- download dialog -->
     <string name="jellyfin_loading">Laden…</string>

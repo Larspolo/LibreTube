@@ -34,6 +34,8 @@ object JellyfinSession {
     private const val USER_ID = "jellyfin_user_id"
     private const val USERNAME = "jellyfin_username"
     private const val TRANSCODING_MODE = "jellyfin_transcoding_mode"
+    private const val LIBRARY_SORT = "jellyfin_sort_"
+    private const val LIBRARY_UNPLAYED = "jellyfin_unplayed_"
 
     private const val AUTH_PREFS = "jellyfin_auth"
     private const val TOKEN = "jellyfin_token"
@@ -76,6 +78,24 @@ object JellyfinSession {
             )
         }.getOrDefault(TranscodingMode.AUDIO_ONLY)
         set(value) = PreferenceHelper.putString(TRANSCODING_MODE, value.name)
+
+    /**
+     * The sort order of the series or movies tab ([itemType] is the Jellyfin item type).
+     */
+    fun librarySort(itemType: String): LibrarySort = runCatching {
+        LibrarySort.valueOf(PreferenceHelper.getString(LIBRARY_SORT + itemType, LibrarySort.NAME.name))
+    }.getOrDefault(LibrarySort.NAME)
+
+    fun setLibrarySort(itemType: String, sort: LibrarySort) =
+        PreferenceHelper.putString(LIBRARY_SORT + itemType, sort.name)
+
+    /**
+     * True if the series or movies tab only shows items that the user did not watch.
+     */
+    fun libraryUnplayedOnly(itemType: String) = PreferenceHelper.getBoolean(LIBRARY_UNPLAYED + itemType, false)
+
+    fun setLibraryUnplayedOnly(itemType: String, unplayedOnly: Boolean) =
+        PreferenceHelper.putBoolean(LIBRARY_UNPLAYED + itemType, unplayedOnly)
 
     fun login(serverUrl: String, userId: String, username: String, token: String) {
         PreferenceHelper.putString(SERVER_URL, serverUrl)

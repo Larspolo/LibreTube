@@ -11,6 +11,12 @@
         android:label="fragment_jellyfin"
         tools:layout="@layout/fragment_jellyfin" />
 
+    <fragment
+        android:id="@+id/jellyfinSearchFragment"
+        android:name="com.github.libretube.jellyfin.ui.JellyfinSearchFragment"
+        android:label="fragment_jellyfin_search"
+        tools:layout="@layout/fragment_jellyfin_search" />
+
     <!-- page of a series (tabs: seasons) or of a collection (tab: movies) -->
     <fragment
         android:id="@+id/jellyfinSeriesFragment"

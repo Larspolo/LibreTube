@@ -59,6 +59,7 @@ interface JellyfinApi {
         @Query("sortBy") sortBy: String? = null,
         @Query("sortOrder") sortOrder: String? = null,
         @Query("filters") filters: String? = null,
+        @Query("searchTerm") searchTerm: String? = null,
         @Query("fields") fields: String,
         @Query("startIndex") startIndex: Int? = null,
         @Query("limit") limit: Int? = null
@@ -113,6 +114,25 @@ interface JellyfinApi {
 
     @POST("UserPlayedItems/{itemId}")
     suspend fun markPlayed(
+        @Path("itemId") itemId: String,
+        @Query("userId") userId: String
+    ): Response<Unit>
+
+    /**
+     * Set the position of an item, for progress that LibreTube saved offline.
+     */
+    @POST("UserItems/{itemId}/UserData")
+    suspend fun updateUserData(
+        @Path("itemId") itemId: String,
+        @Query("userId") userId: String,
+        @Body body: UpdateUserItemDataRequest
+    ): Response<Unit>
+
+    /**
+     * Mark the item as not watched. Jellyfin also removes the position.
+     */
+    @DELETE("UserPlayedItems/{itemId}")
+    suspend fun markUnplayed(
         @Path("itemId") itemId: String,
         @Query("userId") userId: String
     ): Response<Unit>

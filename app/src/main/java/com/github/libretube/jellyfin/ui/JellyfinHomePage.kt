@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.libretube.R
 import com.github.libretube.databinding.FragmentJellyfinHomeBinding
+import com.github.libretube.jellyfin.JellyfinOfflineSync
 import com.github.libretube.jellyfin.JellyfinRepository
 import com.github.libretube.jellyfin.api.BaseItem
 import kotlinx.coroutines.Job
@@ -57,6 +58,8 @@ class JellyfinHomePage : Fragment(R.layout.fragment_jellyfin_home) {
         loadJob?.cancel()
         loadJob = viewLifecycleOwner.lifecycleScope.launch {
             try {
+                // first the offline progress, so that "continue watching" shows it
+                JellyfinOfflineSync.syncDownloads()
                 coroutineScope {
                     val resume = async { JellyfinRepository.getResumeItems() }
                     val nextUp = async { JellyfinRepository.getNextUp() }

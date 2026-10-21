@@ -102,6 +102,9 @@ class JellyfinPlaybackReporter(
         positionMs: Long,
         call: suspend (api: JellyfinApi, report: PlaybackReport) -> Unit
     ) {
+        // the offline sync must not send this position again
+        JellyfinOfflineSync.markSynced(playback.itemId.toJellyfinId(), positionMs)
+
         val report = PlaybackReport(
             itemId = playback.itemId,
             mediaSourceId = playback.mediaSourceId,

@@ -25,6 +25,7 @@ import kotlinx.coroutines.sync.withLock
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import retrofit2.HttpException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -90,7 +91,7 @@ class JellyfinPlayback(
 /**
  * An error with a message for the user.
  */
-class JellyfinPlaybackException(@StringRes private val messageRes: Int) : Exception() {
+class JellyfinPlaybackException(@param:StringRes private val messageRes: Int) : Exception() {
     override val message: String
         get() = LibreTubeApp.instance.getString(messageRes)
 }
@@ -104,6 +105,7 @@ class JellyfinPlaybackException(@StringRes private val messageRes: Int) : Except
 object JellyfinRepository {
     private const val LIST_FIELDS = "Overview,ChildCount,PrimaryImageAspectRatio"
     private const val RELATED_LIMIT = 10
+    private const val SEARCH_LIMIT = 60
     private const val MAX_COLLECTIONS = 200
     private const val MAX_STREAMING_BITRATE = 1_000_000_000L
 
@@ -202,6 +204,18 @@ object JellyfinRepository {
 
     suspend fun getItem(itemId: String): BaseItem = api.getItem(itemId, userId)
 
+    /**
+     * Series and movies first, then episodes. In each group, the order of the server stays.
+     */
+    suspend fun search(query: String): List<BaseItem> = api.getItems(
+        userId,
+        includeItemTypes = "Series,Movie,BoxSet,Episode",
+        recursive = true,
+        searchTerm = query,
+        fields = LIST_FIELDS,
+        limit = SEARCH_LIMIT
+    ).items.sortedBy { if (it.isEpisode) 1 else 0 }
+
     suspend fun getSeasons(seriesId: String): List<BaseItem> =
         api.getSeasons(seriesId, userId, LIST_FIELDS).items
 
@@ -216,8 +230,13 @@ object JellyfinRepository {
         fields = LIST_FIELDS
     ).items
 
-    suspend fun markPlayed(itemId: String) {
-        api.markPlayed(itemId, userId)
+    /**
+     * Mark an item as watched or not watched. For a series, a season or a collection,
+     * Jellyfin changes all items in it.
+     */
+    suspend fun setPlayed(itemId: String, played: Boolean) {
+        val response = if (played) api.markPlayed(itemId, userId) else api.markUnplayed(itemId, userId)
+        if (!response.isSuccessful) throw HttpException(response)
     }
 
     /**

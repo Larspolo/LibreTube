@@ -72,6 +72,7 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
         binding.notificationBell.contentDescription = getString(R.string.jellyfin_download_all)
         binding.notificationBell.setOnClickListener { downloadCurrentTab() }
         binding.showMore.setOnClickListener { showMoreOptions() }
+        JellyfinSearchMenu.addTo(this)
 
         load()
     }
@@ -228,16 +229,18 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
 
     private fun showMoreOptions() {
         val (_, seasonId) = currentTab() ?: return
+        val options = listOf(R.string.mark_as_watched, R.string.mark_as_unwatched)
 
         BaseBottomSheet()
-            .setSimpleItems(listOf(getString(R.string.mark_as_watched))) {
+            .setSimpleItems(options.map { getString(it) }) { index ->
+                val played = options[index] == R.string.mark_as_watched
                 // Jellyfin marks all episodes of a season (or all movies of a collection)
                 val result = withContext(Dispatchers.IO) {
-                    runCatching { JellyfinRepository.markPlayed(seasonId ?: itemId) }
+                    runCatching { JellyfinRepository.setPlayed(seasonId ?: itemId, played) }
                 }
                 val context = context ?: return@setSimpleItems
                 val message = result.exceptionOrNull()?.localizedMessage
-                    ?: context.getString(R.string.jellyfin_marked_watched)
+                    ?: context.getString(if (played) R.string.jellyfin_marked_watched else R.string.jellyfin_marked_unwatched)
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 if (_binding != null) load()
             }

@@ -104,6 +104,9 @@ class JellyfinPlayerService : AbstractPlayerService() {
 
         if (!playerData.keepQueue) PlayingQueue.clear()
 
+        // the phone is online now: send the progress of downloads that the user watched offline
+        CoroutineScope(Dispatchers.IO).launch { JellyfinOfflineSync.syncDownloads() }
+
         withContext(Dispatchers.Main) {
             exoPlayer?.addListener(playerListener)
             trackSelector?.updateParameters {

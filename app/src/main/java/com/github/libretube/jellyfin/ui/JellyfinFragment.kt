@@ -71,6 +71,7 @@ class JellyfinFragment : Fragment(R.layout.fragment_jellyfin) {
         }
 
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        JellyfinSearchMenu.addTo(this)
 
         showState()
     }

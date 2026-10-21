@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.libretube.R
 import com.github.libretube.databinding.FragmentJellyfinLibraryBinding
 import com.github.libretube.jellyfin.JellyfinRepository
+import com.github.libretube.jellyfin.JellyfinSession
 import com.github.libretube.jellyfin.LibrarySort
 import com.github.libretube.jellyfin.api.BaseItem
 import kotlinx.coroutines.Job
@@ -37,6 +38,8 @@ class JellyfinLibraryPage : Fragment(R.layout.fragment_jellyfin_library) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         itemType = requireArguments().getString(ARG_ITEM_TYPE)!!
+        sort = JellyfinSession.librarySort(itemType)
+        unplayedOnly = JellyfinSession.libraryUnplayedOnly(itemType)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,6 +61,7 @@ class JellyfinLibraryPage : Fragment(R.layout.fragment_jellyfin_library) {
         binding.unplayedChip.isChecked = unplayedOnly
         binding.unplayedChip.setOnCheckedChangeListener { _, isChecked ->
             unplayedOnly = isChecked
+            JellyfinSession.setLibraryUnplayedOnly(itemType, isChecked)
             reload()
         }
         updateSortChip()
@@ -75,6 +79,7 @@ class JellyfinLibraryPage : Fragment(R.layout.fragment_jellyfin_library) {
         LibrarySort.entries.forEach { popup.menu.add(0, it.ordinal, it.ordinal, sortTitle(it)) }
         popup.setOnMenuItemClickListener { menuItem ->
             sort = LibrarySort.entries[menuItem.itemId]
+            JellyfinSession.setLibrarySort(itemType, sort)
             updateSortChip()
             reload()
             true

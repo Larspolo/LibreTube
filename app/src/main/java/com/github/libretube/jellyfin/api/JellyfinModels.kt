@@ -207,6 +207,13 @@ data class PlaybackReport(
 )
 
 @Serializable
+data class UpdateUserItemDataRequest(
+    @SerialName("PlaybackPositionTicks") val playbackPositionTicks: Long,
+    /** ISO 8601, for the order of "continue watching". */
+    @SerialName("LastPlayedDate") val lastPlayedDate: String
+)
+
+@Serializable
 data class MediaSegmentsResult(
     @SerialName("Items") val items: List<MediaSegment> = emptyList()
 )

@@ -23,6 +23,9 @@
     <string name="jellyfin_transcoding_audio_only">Audio only (recommended): the server can convert audio that this phone cannot play</string>
     <string name="jellyfin_transcoding_always">Always: the server can also convert the video (high server load)</string>
 
+    <!-- search -->
+    <string name="jellyfin_search_hint">Search in Jellyfin</string>
+
     <!-- lists -->
     <string name="jellyfin_next_up">Next up</string>
     <string name="jellyfin_recently_added">Recently added</string>
@@ -39,6 +42,7 @@
     <string name="jellyfin_download_all_confirm">Download %1$d items of \"%2$s\"? Each download is the original file.</string>
     <string name="jellyfin_download_all_started">%1$d downloads started</string>
     <string name="jellyfin_marked_watched">Marked as watched</string>
+    <string name="jellyfin_marked_unwatched">Marked as not watched</string>
 
     <!-- download dialog -->
     <string name="jellyfin_loading">Loading…</string>

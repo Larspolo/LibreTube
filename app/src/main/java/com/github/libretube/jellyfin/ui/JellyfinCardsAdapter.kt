@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.libretube.R
+import com.github.libretube.databinding.JellyfinPosterBadgeBinding
 import com.github.libretube.databinding.TrendingRowBinding
 import com.github.libretube.databinding.VideoRowBinding
 import com.github.libretube.db.DatabaseHolder
@@ -59,24 +60,38 @@ enum class JellyfinCardStyle {
  * Cards for Jellyfin items, with the item layouts of LibreTube.
  *
  * LibreTube's own adapters open the YouTube options at a long press, thus this adapter
- * is necessary. A long press shows: play, download, mark as watched.
+ * is necessary. A long press shows: play, download, mark as watched or not watched.
  *
  * @param itemWidthDp a fixed width for horizontal rows
- * @param onItemChanged called after the user marked an item as watched
+ * @param showSeriesName show the series name in a row (for search results)
+ * @param onItemChanged called after the user marked an item as watched or not watched
  */
 class JellyfinCardsAdapter(
     private val style: JellyfinCardStyle,
     private val itemWidthDp: Float? = null,
+    private val showSeriesName: Boolean = false,
     private val onItemChanged: () -> Unit = {}
 ) : ListAdapter<BaseItem, RecyclerView.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (style == JellyfinCardStyle.ROW) {
-            VideosViewHolder(VideoRowBinding.inflate(inflater, parent, false))
-        } else {
-            VideoCardsViewHolder(TrendingRowBinding.inflate(inflater, parent, false))
+        if (style == JellyfinCardStyle.ROW) {
+            return VideosViewHolder(VideoRowBinding.inflate(inflater, parent, false))
         }
+
+        val binding = TrendingRowBinding.inflate(inflater, parent, false)
+        if (style == JellyfinCardStyle.POSTER) {
+            // the layout of LibreTube has no place for a badge, thus it is added at the top right
+            val container = binding.thumbnailcard.getChildAt(0) as ConstraintLayout
+            val badge = JellyfinPosterBadgeBinding.inflate(inflater, container, false)
+            badge.root.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            }
+            container.addView(badge.root)
+            binding.root.setTag(R.id.jellyfin_badge, badge)
+        }
+        return VideoCardsViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -106,6 +121,7 @@ class JellyfinCardsAdapter(
             if (showDuration) thumbnailDuration.setFormattedDuration(item.durationSeconds, false, 0)
             watchProgress.setJellyfinWatchProgress(item)
             sponsorBadgeCard.isGone = true
+            (root.getTag(R.id.jellyfin_badge) as? JellyfinPosterBadgeBinding)?.let { bindBadge(it, item) }
 
             // the series poster takes the place of the channel avatar
             val seriesId = item.seriesId
@@ -122,8 +138,8 @@ class JellyfinCardsAdapter(
 
             root.setOnClickListener { open(context, item) }
             root.setOnLongClickListener {
-                if (item.isPlayable) showOptions(context, item)
-                item.isPlayable
+                showOptions(context, item)
+                true
             }
         }
     }
@@ -133,9 +149,12 @@ class JellyfinCardsAdapter(
             val context = root.context
 
             videoTitle.text = item.displayTitle()
-            videoInfo.text = item.premiereMillis.takeIf { it > 0 }
+            val date = item.premiereMillis.takeIf { it > 0 && item.isPlayable }
                 ?.let { DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(it)) }
-                ?: item.cardSubtitle(context)
+            val seriesName = item.seriesName.takeIf { showSeriesName && item.isEpisode }
+            videoInfo.text = listOfNotNull(seriesName, date).ifEmpty { listOf(item.cardSubtitle(context)) }
+                .joinToString(" · ")
+            thumbnailDurationCard.isVisible = item.isPlayable && item.durationSeconds > 0
             thumbnailDuration.setFormattedDuration(item.durationSeconds, false, 0)
             watchProgress.setJellyfinWatchProgress(item)
             ImageHelper.loadImage(item.wideImageUrl(), thumbnail)
@@ -143,8 +162,8 @@ class JellyfinCardsAdapter(
 
             root.setOnClickListener { open(context, item) }
             root.setOnLongClickListener {
-                if (item.isPlayable) showOptions(context, item)
-                item.isPlayable
+                showOptions(context, item)
+                true
             }
 
             downloadBadge.isVisible = false
@@ -156,6 +175,20 @@ class JellyfinCardsAdapter(
                 }
             }
         }
+    }
+
+    /**
+     * Series and collections: the number of unwatched items. Watched items: a check mark.
+     */
+    private fun bindBadge(badge: JellyfinPosterBadgeBinding, item: BaseItem) {
+        val userData = item.userData
+        val unplayedCount = userData?.unplayedItemCount?.takeIf { !item.isPlayable && it > 0 }
+        val isPlayed = userData?.played == true
+
+        badge.root.isVisible = isPlayed || unplayedCount != null
+        badge.badgeIcon.isVisible = isPlayed
+        badge.badgeText.isVisible = !isPlayed && unplayedCount != null
+        badge.badgeText.text = unplayedCount?.toString()
     }
 
     private fun subtitle(context: Context, item: BaseItem, showTimeLeft: Boolean): String {
@@ -176,33 +209,41 @@ class JellyfinCardsAdapter(
         }
     }
 
+    /**
+     * Long press: play and download (episodes and movies), and mark as watched or not watched.
+     * A started item gets both marks: "not watched" also removes the position.
+     */
     private fun showOptions(context: Context, item: BaseItem) {
         val activity = ContextHelper.unwrapActivity<BaseActivity>(context)
         val videoId = item.id.toJellyfinId()
-        val options = listOf(
-            context.getString(R.string.jellyfin_play),
-            context.getString(R.string.download),
-            context.getString(R.string.mark_as_watched)
-        )
+        val isPlayed = item.userData?.played == true
+        val isStarted = item.resumePositionMs > 0
+
+        val options = buildList<Pair<Int, suspend () -> Unit>> {
+            if (item.isPlayable) {
+                add(R.string.jellyfin_play to { NavigationHelper.navigateVideo(activity, PlayerData(videoId)) })
+                add(R.string.download to { JellyfinDownloadDialog.show(activity.supportFragmentManager, videoId) })
+            }
+            if (!isPlayed) add(R.string.mark_as_watched to { setPlayed(activity, item, true) })
+            if (isPlayed || isStarted) add(R.string.mark_as_unwatched to { setPlayed(activity, item, false) })
+        }
 
         BaseBottomSheet()
             .apply { setTitle(item.displayTitle()) }
-            .setSimpleItems(options) { index ->
-                when (index) {
-                    0 -> NavigationHelper.navigateVideo(activity, PlayerData(videoId))
-                    1 -> JellyfinDownloadDialog.show(activity.supportFragmentManager, videoId)
-                    2 -> {
-                        val result = withContext(Dispatchers.IO) {
-                            runCatching { JellyfinRepository.markPlayed(item.id) }
-                        }
-                        val message = result.exceptionOrNull()?.localizedMessage
-                            ?: activity.getString(R.string.jellyfin_marked_watched)
-                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-                        onItemChanged()
-                    }
-                }
+            .setSimpleItems(options.map { context.getString(it.first) }) { index ->
+                options[index].second.invoke()
             }
             .show(activity.supportFragmentManager)
+    }
+
+    private suspend fun setPlayed(context: Context, item: BaseItem, played: Boolean) {
+        val result = withContext(Dispatchers.IO) {
+            runCatching { JellyfinRepository.setPlayed(item.id, played) }
+        }
+        val message = result.exceptionOrNull()?.localizedMessage
+            ?: context.getString(if (played) R.string.jellyfin_marked_watched else R.string.jellyfin_marked_unwatched)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        onItemChanged()
     }
 
     private val BaseItem.isPlayable get() = isEpisode || isMovie
