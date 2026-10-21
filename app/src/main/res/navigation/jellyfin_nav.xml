@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/jellyfinGraph"
+    app:startDestination="@id/jellyfinFragment">
+
+    <fragment
+        android:id="@+id/jellyfinFragment"
+        android:name="com.github.libretube.jellyfin.ui.JellyfinFragment"
+        android:label="fragment_jellyfin"
+        tools:layout="@layout/fragment_jellyfin" />
+
+    <!-- page of a series (tabs: seasons) or of a collection (tab: movies) -->
+    <fragment
+        android:id="@+id/jellyfinSeriesFragment"
+        android:name="com.github.libretube.jellyfin.ui.JellyfinSeriesFragment"
+        android:label="fragment_jellyfin_series"
+        tools:layout="@layout/fragment_channel">
+
+        <argument
+            android:name="itemId"
+            app:argType="string" />
+
+        <deepLink app:uri="libretube-jellyfin://parent/{itemId}" />
+
+    </fragment>
+
+</navigation>

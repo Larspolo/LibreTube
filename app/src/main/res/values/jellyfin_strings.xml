@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="jellyfin" translatable="false">Jellyfin</string>
+
+    <!-- tabs -->
+    <string name="jellyfin_overview">Overview</string>
+    <string name="jellyfin_series">Series</string>
+    <string name="jellyfin_movies_tab">Movies</string>
+
+    <!-- login -->
+    <string name="jellyfin_connect_title">Connect to Jellyfin</string>
+    <string name="jellyfin_connect_summary">Log in to your Jellyfin server. LibreTube keeps the server URL and a login token. It does not keep your password.</string>
+    <string name="jellyfin_server_url">Server URL</string>
+    <string name="jellyfin_invalid_url">This URL is not valid.</string>
+    <string name="jellyfin_login_failed">The username or the password is not correct.</string>
+    <string name="jellyfin_server_unreachable">LibreTube cannot connect to this server. Make sure that the URL is correct.</string>
+    <string name="jellyfin_session_expired">Your Jellyfin login is not valid anymore. Log in again.</string>
+    <string name="jellyfin_switch_server">Switch server</string>
+
+    <!-- transcoding -->
+    <string name="jellyfin_transcoding">Transcoding</string>
+    <string name="jellyfin_transcoding_never">Never: the server only sends the original file</string>
+    <string name="jellyfin_transcoding_audio_only">Audio only (recommended): the server can convert audio that this phone cannot play</string>
+    <string name="jellyfin_transcoding_always">Always: the server can also convert the video (high server load)</string>
+
+    <!-- lists -->
+    <string name="jellyfin_next_up">Next up</string>
+    <string name="jellyfin_recently_added">Recently added</string>
+    <string name="jellyfin_sort_name">Title A–Z</string>
+    <string name="jellyfin_sort_date_added">Recently added</string>
+    <string name="jellyfin_unplayed">Not watched</string>
+    <string name="jellyfin_time_left">%1$d min left</string>
+    <string name="jellyfin_season">Season %1$d</string>
+
+    <!-- series page -->
+    <string name="jellyfin_play">Play</string>
+    <string name="jellyfin_continue">Continue: %1$s</string>
+    <string name="jellyfin_download_all">Download all</string>
+    <string name="jellyfin_download_all_confirm">Download %1$d items of \"%2$s\"? Each download is the original file.</string>
+    <string name="jellyfin_download_all_started">%1$d downloads started</string>
+    <string name="jellyfin_marked_watched">Marked as watched</string>
+
+    <!-- download dialog -->
+    <string name="jellyfin_loading">Loading…</string>
+    <string name="jellyfin_original_quality">Original</string>
+    <string name="jellyfin_none">None</string>
+    <string name="jellyfin_in_file">In the file · %1$s</string>
+    <string name="jellyfin_download_not_allowed">The Jellyfin server does not allow downloads for this user. Turn on \"Allow media downloading\" for the user on the server.</string>
+    <string name="jellyfin_download_no_resume">The server does not send parts of a file (HTTP 206). A download from this server can break, thus LibreTube does not start it.</string>
+    <string name="jellyfin_download_not_possible">LibreTube cannot download this item.</string>
+    <string name="jellyfin_download_audio_warning">This phone cannot play the audio of this file (%1$s). Offline, the video plays without sound.</string>
+
+    <!-- playback -->
+    <string name="jellyfin_playback_not_allowed">The Jellyfin server does not allow the playback of this item.</string>
+    <string name="jellyfin_playback_not_possible">Jellyfin has no stream that this phone can play.</string>
+    <string name="jellyfin_needs_transcoding">The server must convert this video, but transcoding is set to \"Never\". You can change this in the menu of the Jellyfin tab.</string>
+    <string name="jellyfin_needs_video_transcoding">This phone cannot play the video of this file. Only transcoding \"Always\" can play it, but that causes a high server load.</string>
+
+    <plurals name="jellyfin_seasons">
+        <item quantity="one">%d season</item>
+        <item quantity="other">%d seasons</item>
+    </plurals>
+    <plurals name="jellyfin_episodes">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
+    <plurals name="jellyfin_movies">
+        <item quantity="one">%d movie</item>
+        <item quantity="other">%d movies</item>
+    </plurals>
+    <plurals name="jellyfin_tracks">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
+</resources>

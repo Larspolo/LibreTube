@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tabs -->
+    <string name="jellyfin_overview">Overzicht</string>
+    <string name="jellyfin_series">Series</string>
+    <string name="jellyfin_movies_tab">Films</string>
+
+    <!-- login -->
+    <string name="jellyfin_connect_title">Verbinden met Jellyfin</string>
+    <string name="jellyfin_connect_summary">Log in op je Jellyfin-server. LibreTube bewaart de server-URL en een login-token. Je wachtwoord bewaart LibreTube niet.</string>
+    <string name="jellyfin_server_url">Server-URL</string>
+    <string name="jellyfin_invalid_url">Deze URL is niet geldig.</string>
+    <string name="jellyfin_login_failed">De gebruikersnaam of het wachtwoord klopt niet.</string>
+    <string name="jellyfin_server_unreachable">LibreTube kan geen verbinding maken met deze server. Controleer de URL.</string>
+    <string name="jellyfin_session_expired">Je Jellyfin-login is niet meer geldig. Log opnieuw in.</string>
+    <string name="jellyfin_switch_server">Server wisselen</string>
+
+    <!-- transcoding -->
+    <string name="jellyfin_transcoding">Transcoding</string>
+    <string name="jellyfin_transcoding_never">Nooit: de server stuurt alleen het originele bestand</string>
+    <string name="jellyfin_transcoding_audio_only">Alleen audio (aanbevolen): de server mag audio omzetten die deze telefoon niet afspeelt</string>
+    <string name="jellyfin_transcoding_always">Altijd: de server mag ook de video omzetten (zware belasting)</string>
+
+    <!-- lists -->
+    <string name="jellyfin_next_up">Volgende afleveringen</string>
+    <string name="jellyfin_recently_added">Recent toegevoegd</string>
+    <string name="jellyfin_sort_name">Titel A–Z</string>
+    <string name="jellyfin_sort_date_added">Recent toegevoegd</string>
+    <string name="jellyfin_unplayed">Niet gezien</string>
+    <string name="jellyfin_time_left">nog %1$d min</string>
+    <string name="jellyfin_season">Seizoen %1$d</string>
+
+    <!-- series page -->
+    <string name="jellyfin_play">Afspelen</string>
+    <string name="jellyfin_continue">Verder: %1$s</string>
+    <string name="jellyfin_download_all">Alles downloaden</string>
+    <string name="jellyfin_download_all_confirm">%1$d items van \"%2$s\" downloaden? Elke download is het originele bestand.</string>
+    <string name="jellyfin_download_all_started">%1$d downloads gestart</string>
+    <string name="jellyfin_marked_watched">Gemarkeerd als gezien</string>
+
+    <!-- download dialog -->
+    <string name="jellyfin_loading">Laden…</string>
+    <string name="jellyfin_original_quality">Origineel</string>
+    <string name="jellyfin_none">Geen</string>
+    <string name="jellyfin_in_file">In het bestand · %1$s</string>
+    <string name="jellyfin_download_not_allowed">De Jellyfin-server staat downloaden niet toe voor deze gebruiker. Zet \"Downloaden van media toestaan\" aan voor de gebruiker op de server.</string>
+    <string name="jellyfin_download_no_resume">De server stuurt geen delen van een bestand (HTTP 206). Een download van deze server kan breken, daarom start LibreTube hem niet.</string>
+    <string name="jellyfin_download_not_possible">LibreTube kan dit item niet downloaden.</string>
+    <string name="jellyfin_download_audio_warning">Deze telefoon speelt de audio van dit bestand niet af (%1$s). Offline speelt de video zonder geluid.</string>
+
+    <!-- playback -->
+    <string name="jellyfin_playback_not_allowed">De Jellyfin-server staat het afspelen van dit item niet toe.</string>
+    <string name="jellyfin_playback_not_possible">Jellyfin heeft geen stream die deze telefoon kan afspelen.</string>
+    <string name="jellyfin_needs_transcoding">De server moet deze video omzetten, maar transcoding staat op \"Nooit\". Je kunt dit wijzigen in het menu van de tab Jellyfin.</string>
+    <string name="jellyfin_needs_video_transcoding">Deze telefoon kan de video van dit bestand niet afspelen. Alleen transcoding \"Altijd\" speelt hem af, maar dat belast de server zwaar.</string>
+
+    <plurals name="jellyfin_seasons">
+        <item quantity="one">%d seizoen</item>
+        <item quantity="other">%d seizoenen</item>
+    </plurals>
+    <plurals name="jellyfin_episodes">
+        <item quantity="one">%d aflevering</item>
+        <item quantity="other">%d afleveringen</item>
+    </plurals>
+    <plurals name="jellyfin_movies">
+        <item quantity="one">%d film</item>
+        <item quantity="other">%d films</item>
+    </plurals>
+    <plurals name="jellyfin_tracks">
+        <item quantity="one">%d spoor</item>
+        <item quantity="other">%d sporen</item>
+    </plurals>
+</resources>
