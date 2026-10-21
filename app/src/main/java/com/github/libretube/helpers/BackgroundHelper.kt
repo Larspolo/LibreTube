@@ -16,6 +16,8 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.github.libretube.constants.IntentData
 import com.github.libretube.extensions.TAG
+import com.github.libretube.jellyfin.JellyfinIds
+import com.github.libretube.jellyfin.JellyfinPlayerService
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.services.AbstractPlayerService
 import com.github.libretube.services.OfflinePlayerService
@@ -50,7 +52,7 @@ object BackgroundHelper {
         }
 
         val noInternet = ContextHelper.tryUnwrapActivity<NoInternetActivity>(context) != null
-        val service = if (playerData.isOffline) OfflinePlayerService::class.java else OnlinePlayerService::class.java
+        val service = if (playerData.isOffline) OfflinePlayerService::class.java else JellyfinIds.onlineServiceFor(playerData.videoId)
         stopBackgroundPlay(context)
         startMediaService(context, service, bundleOf(
             IntentData.playerData to playerData,
@@ -65,7 +67,8 @@ object BackgroundHelper {
     fun stopBackgroundPlay(context: Context) {
         arrayOf(
             OnlinePlayerService::class.java,
-            OfflinePlayerService::class.java
+            OfflinePlayerService::class.java,
+            JellyfinPlayerService::class.java
         ).forEach {
             val intent = Intent(context, it)
             context.stopService(intent)
@@ -116,7 +119,7 @@ object BackgroundHelper {
         return if (PlayingQueue.queueMode == PlayingQueueMode.OFFLINE) {
             OfflinePlayerService::class.java
         } else {
-            OnlinePlayerService::class.java
+            JellyfinIds.onlineService
         }
     }
 

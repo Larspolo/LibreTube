@@ -172,4 +172,7 @@
         app:popUpTo="@id/homeFragment"
         app:popUpToSaveState="true"
         app:restoreState="false" />
+
+    <include app:graph="@navigation/jellyfin_nav" />
+
 </navigation>

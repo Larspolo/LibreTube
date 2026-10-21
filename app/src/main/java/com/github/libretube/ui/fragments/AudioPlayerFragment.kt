@@ -43,10 +43,10 @@ import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.NavigationHelper
 import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.ThemeHelper
+import com.github.libretube.jellyfin.JellyfinIds
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.services.AbstractPlayerService
 import com.github.libretube.services.OfflinePlayerService
-import com.github.libretube.services.OnlinePlayerService
 import com.github.libretube.ui.activities.AbstractPlayerHostActivity
 import com.github.libretube.ui.extensions.getSystemInsets
 import com.github.libretube.ui.extensions.setOnBackPressed
@@ -94,7 +94,7 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player), AudioPlaye
 
         BackgroundHelper.startMediaService(
             requireContext(),
-            if (isOffline) OfflinePlayerService::class.java else OnlinePlayerService::class.java,
+            if (isOffline) OfflinePlayerService::class.java else JellyfinIds.onlineService,
         ) {
             if (_binding == null) {
                 it.sendCustomCommand(AbstractPlayerService.stopServiceCommand, Bundle.EMPTY)

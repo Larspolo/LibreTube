@@ -28,4 +28,9 @@
         android:title="@string/downloads"
         android:visible="false" />
 
+    <item
+        android:id="@+id/jellyfinGraph"
+        android:icon="@drawable/ic_video"
+        android:title="@string/jellyfin" />
+
 </menu>

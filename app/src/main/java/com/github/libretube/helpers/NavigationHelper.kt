@@ -15,6 +15,7 @@ import com.github.libretube.constants.IntentData
 import com.github.libretube.constants.PreferenceKeys
 import com.github.libretube.enums.PlaylistType
 import com.github.libretube.extensions.toID
+import com.github.libretube.jellyfin.JellyfinIds
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.ui.activities.AbstractPlayerHostActivity
 import com.github.libretube.ui.activities.MainActivity
@@ -61,7 +62,8 @@ object NavigationHelper {
         val attachedToRunningPlayer = activity.runOnPlayerFragment {
             // can only continue using player if in same mode (online/offline)
             // otherwise, recreate the player
-            if (playerData.isOffline != isOffline || playerData.videoId == null) return@runOnPlayerFragment false
+            if (playerData.isOffline != isOffline || playerData.videoId == null ||
+                JellyfinIds.isSourceSwitch(playerData)) return@runOnPlayerFragment false
 
             try {
                 PlayingQueue.clearAfterCurrent()
@@ -87,7 +89,8 @@ object NavigationHelper {
         val attachedToRunningAudioPlayer = activity.runOnAudioPlayerFragment {
             // can only continue using player if in same mode (online/offline)
             // otherwise, recreate the player
-            if (playerData.isOffline != isOffline || playerData.videoId == null) return@runOnAudioPlayerFragment false
+            if (playerData.isOffline != isOffline || playerData.videoId == null ||
+                JellyfinIds.isSourceSwitch(playerData)) return@runOnAudioPlayerFragment false
 
             PlayingQueue.clearAfterCurrent()
             this.playNextVideo(playerData.videoId.toID())

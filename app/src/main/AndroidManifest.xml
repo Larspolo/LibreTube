@@ -438,6 +438,18 @@
         </service>
 
         <service
+            android:name=".jellyfin.JellyfinPlayerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
+
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+
+        </service>
+
+        <service
             android:name=".services.OnClearFromRecentService"
             android:enabled="true"
             android:exported="false" />

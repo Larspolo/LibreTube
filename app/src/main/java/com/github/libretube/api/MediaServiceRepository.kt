@@ -12,6 +12,7 @@ import com.github.libretube.api.obj.SegmentData
 import com.github.libretube.api.obj.StreamItem
 import com.github.libretube.api.obj.Streams
 import com.github.libretube.helpers.PlayerHelper
+import com.github.libretube.jellyfin.JellyfinAwareRepository
 
 interface MediaServiceRepository {
     fun getTrendingCategories(): List<TrendingCategory>
@@ -44,7 +45,7 @@ interface MediaServiceRepository {
 
     companion object {
         val instance: MediaServiceRepository
-            get() =  NewPipeMediaServiceRepository()
+            get() = JellyfinAwareRepository(NewPipeMediaServiceRepository())
     }
 }
 

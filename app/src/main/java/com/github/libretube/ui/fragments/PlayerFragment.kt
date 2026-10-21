@@ -81,11 +81,12 @@ import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.helpers.PlayerHelper.getCurrentSegment
 import com.github.libretube.helpers.ThemeHelper
 import com.github.libretube.helpers.WindowHelper
+import com.github.libretube.jellyfin.JellyfinIds
+import com.github.libretube.jellyfin.JellyfinPlayerUi
 import com.github.libretube.obj.ShareData
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.services.AbstractPlayerService
 import com.github.libretube.services.OfflinePlayerService
-import com.github.libretube.services.OnlinePlayerService
 import com.github.libretube.ui.activities.AbstractPlayerHostActivity
 import com.github.libretube.ui.activities.NoInternetActivity
 import com.github.libretube.ui.adapters.VideoCardsAdapter
@@ -541,7 +542,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
                 IntentData.noInternet to isNoInternet
             )
         } else {
-            OnlinePlayerService::class.java to bundleOf(
+            JellyfinIds.onlineServiceFor(playerData.videoId) to bundleOf(
                 IntentData.playerData to playerData,
                 IntentData.audioOnly to false
             )
@@ -1217,6 +1218,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player), CustomPlayerCallback 
         getHighlight(viewModel.segments.value.orEmpty())?.let {
             lifecycleScope.launch(Dispatchers.IO) { initializeHighlight(it) }
         }
+
+        if (::videoId.isInitialized) JellyfinPlayerUi.adapt(binding, videoId, streams, childFragmentManager)
     }
 
     private suspend fun showRelatedStreams() {
