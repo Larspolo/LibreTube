@@ -83,13 +83,31 @@ fun BaseItem.posterUrl(): String? {
 }
 
 /**
- * A wide image for the top of the series page.
+ * An image for the top of the series page, and the format (width / height) to show it in.
  */
-fun BaseItem.bannerUrl(): String? {
-    imageTags[IMAGE_BANNER]?.let { return JellyfinClient.imageUrl(id, IMAGE_BANNER, it, 1280) }
-    backdropImageTags.firstOrNull()?.let { return JellyfinClient.imageUrl(id, IMAGE_BACKDROP, it, 1280) }
+data class HeaderImage(val url: String, val aspectRatio: Float)
+
+/**
+ * The backdrop has no text, thus a crop of it looks good. The banner has the format of
+ * a YouTube channel banner, but often shows the title a second time.
+ */
+fun BaseItem.headerImage(): HeaderImage? {
+    backdropImageTags.firstOrNull()?.let {
+        return HeaderImage(JellyfinClient.imageUrl(id, IMAGE_BACKDROP, it, HEADER_IMAGE_WIDTH), BACKDROP_HEADER_RATIO)
+    }
+    imageTags[IMAGE_BANNER]?.let {
+        return HeaderImage(JellyfinClient.imageUrl(id, IMAGE_BANNER, it, HEADER_IMAGE_WIDTH), BANNER_RATIO)
+    }
     return null
 }
+
+private const val HEADER_IMAGE_WIDTH = 1280
+
+/** A wide crop of the 16:9 backdrop, like a cinema screen. */
+private const val BACKDROP_HEADER_RATIO = 2.4f
+
+/** The format of a Jellyfin banner (758 × 140). */
+private const val BANNER_RATIO = 5.4f
 
 /**
  * The item as a LibreTube [StreamItem], for the playing queue and the related videos.

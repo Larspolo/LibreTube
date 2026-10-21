@@ -12,6 +12,7 @@ import com.github.libretube.helpers.PlayerHelper
 import com.github.libretube.jellyfin.ui.JellyfinCardStyle
 import com.github.libretube.jellyfin.ui.JellyfinCardsAdapter
 import com.github.libretube.jellyfin.ui.JellyfinDownloadDialog
+import com.github.libretube.jellyfin.ui.showAsPoster
 
 /**
  * Changes the player screen for a Jellyfin item. The rest of the player stays the same.
@@ -35,6 +36,8 @@ object JellyfinPlayerUi {
         val info = JellyfinRepository.cachedInfo(videoId)
         val parentId = info?.parentId
         b.playerChannel.isVisible = parentId != null || streams.uploader.isNotBlank()
+        // the poster of the series or collection, in its own format instead of a round avatar
+        if (streams.uploaderAvatar != null) b.playerChannelImage.showAsPoster(PLAYER_POSTER_WIDTH_DP)
         b.playerChannelSubCount.text = info?.parentSubtitle
         b.playerChannelSubCount.isVisible = !info?.parentSubtitle.isNullOrEmpty()
         // this listener replaces the one of PlayerFragment, because updatePlayerView() runs later
@@ -59,4 +62,5 @@ object JellyfinPlayerUi {
     }
 
     private const val RELATED_CARD_WIDTH = 250f
+    private const val PLAYER_POSTER_WIDTH_DP = 34f
 }

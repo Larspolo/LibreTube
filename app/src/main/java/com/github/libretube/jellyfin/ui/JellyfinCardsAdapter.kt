@@ -34,7 +34,6 @@ import com.github.libretube.jellyfin.wideImageUrl
 import com.github.libretube.parcelable.PlayerData
 import com.github.libretube.ui.base.BaseActivity
 import com.github.libretube.ui.extensions.setFormattedDuration
-import com.github.libretube.ui.extensions.setWatchProgressLength
 import com.github.libretube.ui.sheets.BaseBottomSheet
 import com.github.libretube.ui.viewholders.VideoCardsViewHolder
 import com.github.libretube.ui.viewholders.VideosViewHolder
@@ -105,14 +104,18 @@ class JellyfinCardsAdapter(
             val showDuration = !isPoster && item.isPlayable && item.durationSeconds > 0
             (thumbnailDuration.parent as View).isVisible = showDuration
             if (showDuration) thumbnailDuration.setFormattedDuration(item.durationSeconds, false, 0)
-            watchProgress.setWatchProgressLength(item.resumePositionMs, item.durationSeconds)
+            watchProgress.setJellyfinWatchProgress(item)
             sponsorBadgeCard.isGone = true
 
             // the series poster takes the place of the channel avatar
             val seriesId = item.seriesId
             val avatarUrl = if (!isPoster && item.isEpisode) item.posterUrl() else null
             channelImageContainer.isVisible = avatarUrl != null
-            if (avatarUrl != null) ImageHelper.loadImage(avatarUrl, channelImage)
+            if (avatarUrl != null) {
+                channelImageContainer.radius = POSTER_CORNER_DP.dpToPx().toFloat()
+                channelImage.setPosterSize(CARD_POSTER_WIDTH_DP)
+                ImageHelper.loadImage(avatarUrl, channelImage)
+            }
             channelImage.setOnClickListener {
                 if (seriesId != null) JellyfinNav.openParent(context, seriesId)
             }
@@ -134,7 +137,7 @@ class JellyfinCardsAdapter(
                 ?.let { DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(it)) }
                 ?: item.cardSubtitle(context)
             thumbnailDuration.setFormattedDuration(item.durationSeconds, false, 0)
-            watchProgress.setWatchProgressLength(item.resumePositionMs, item.durationSeconds)
+            watchProgress.setJellyfinWatchProgress(item)
             ImageHelper.loadImage(item.wideImageUrl(), thumbnail)
             channelContainer.isGone = true
 
@@ -203,6 +206,10 @@ class JellyfinCardsAdapter(
     }
 
     private val BaseItem.isPlayable get() = isEpisode || isMovie
+
+    companion object {
+        private const val CARD_POSTER_WIDTH_DP = 30f
+    }
 
     private object DiffCallback : DiffUtil.ItemCallback<BaseItem>() {
         override fun areItemsTheSame(oldItem: BaseItem, newItem: BaseItem) = oldItem.id == newItem.id

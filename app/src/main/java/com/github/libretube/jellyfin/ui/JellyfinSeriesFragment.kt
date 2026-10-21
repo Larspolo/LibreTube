@@ -2,15 +2,18 @@ package com.github.libretube.jellyfin.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.github.libretube.R
 import com.github.libretube.databinding.FragmentChannelBinding
 import com.github.libretube.db.DatabaseHolder
+import com.github.libretube.extensions.dpToPx
 import com.github.libretube.helpers.DownloadHelper
 import com.github.libretube.helpers.ImageHelper
 import com.github.libretube.helpers.NavigationHelper
@@ -18,7 +21,7 @@ import com.github.libretube.jellyfin.DownloadCheck
 import com.github.libretube.jellyfin.JellyfinNav
 import com.github.libretube.jellyfin.JellyfinRepository
 import com.github.libretube.jellyfin.api.BaseItem
-import com.github.libretube.jellyfin.bannerUrl
+import com.github.libretube.jellyfin.headerImage
 import com.github.libretube.jellyfin.cardSubtitle
 import com.github.libretube.jellyfin.posterUrl
 import com.github.libretube.jellyfin.toJellyfinId
@@ -119,9 +122,19 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
         binding.channelDescription.isGone = item.overview.isNullOrBlank()
         binding.channelDescription.text = item.overview.orEmpty().trim()
 
-        val bannerUrl = item.bannerUrl()
-        binding.channelBanner.isVisible = bannerUrl != null
-        ImageHelper.loadImage(bannerUrl, binding.channelBanner)
+        val header = item.headerImage()
+        binding.channelBanner.isVisible = header != null
+        if (header != null) {
+            val height = resources.displayMetrics.widthPixels / header.aspectRatio
+            binding.channelBanner.updateLayoutParams {
+                this.height = height.toInt().coerceAtMost(MAX_HEADER_HEIGHT_DP.dpToPx())
+            }
+            binding.channelBanner.scaleType = ImageView.ScaleType.CENTER_CROP
+            ImageHelper.loadImage(header.url, binding.channelBanner)
+        }
+
+        // the poster of the series, in its own format instead of a round channel avatar
+        binding.channelImage.showAsPoster(HEADER_POSTER_WIDTH_DP)
         ImageHelper.loadImage(item.posterUrl(), binding.channelImage)
 
         // "Continue: S2·E4" plays the next episode (or the next movie of a collection)
@@ -229,6 +242,11 @@ class JellyfinSeriesFragment : Fragment(R.layout.fragment_channel) {
                 if (_binding != null) load()
             }
             .show(childFragmentManager)
+    }
+
+    companion object {
+        private const val MAX_HEADER_HEIGHT_DP = 220f
+        private const val HEADER_POSTER_WIDTH_DP = 44f
     }
 
     private class SeasonsAdapter(
